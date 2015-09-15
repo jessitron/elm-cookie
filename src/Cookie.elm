@@ -35,14 +35,14 @@ type alias Cookie =
     It checks to make sure the cookie was indeed set to the value you passed in. If not, it returns a failure description.
     Note: if you open a file:// in Chrome, cookies will not work. Use Firefox to test.
  -}
-set: Cookie -> Task String Cookie
+set : Cookie -> Task String Cookie
 set = Native.Cookie.set
 
 {-| Fetch the value of a cookie. If the cookie is not set, returns Nothing.
 
   There are no error conditions.
  -}
-get: String -> Task Effects.Never (Maybe Cookie)
+get : String -> Task Effects.Never (Maybe Cookie)
 get = Native.Cookie.get
 
 {-| Create an Effects Action that sets a cookie, where Action is your own type.
@@ -59,9 +59,9 @@ writeCookie failureConstructor successConstructor cookie =
         Err err -> failureConstructor err
   in
   set cookie
-  |> Task.toResult
-  |> Task.map interpreter
-  |> Effects.task
+    |> Task.toResult
+    |> Task.map interpreter
+    |> Effects.task
 
 {-| Create an Effects Action to give you the value of a cookie, where Action is your own type.
 
@@ -71,8 +71,8 @@ writeCookie failureConstructor successConstructor cookie =
 readCookie : (Maybe Cookie -> action) -> String -> Effects action
 readCookie successConstructor key =
   get key 
-  |> Task.map successConstructor
-  |> Effects.task
+    |> Task.map successConstructor
+    |> Effects.task
 
 
 
