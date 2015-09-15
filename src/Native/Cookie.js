@@ -17,28 +17,33 @@ Elm.Native.Cookie.make = function(localRuntime) {
 
   function set(co) 
   {
-    key = co.key
-    value = co.value
-    var setcommand = encodeURIComponent(key) + "=" + encodeURIComponent(value)
-    document.cookie = setcommand
-    var newValue = howToGetACookie(key)
-    if (newValue === value)
-    {
-      return Task.succeed({key: key, value: value});  
-    } else {
-      return Task.fail("cookie " + setcommand + " was not set. It holds <" + newValue + ">")
-    }
+    key = co.key;
+    value = co.value;
+
+    return Task.asyncFunction(function(callback) {
+      var setcommand = encodeURIComponent(key) + "=" + encodeURIComponent(value)
+      document.cookie = setcommand
+      var newValue = howToGetACookie(key)
+      if (newValue === value)
+      {
+        callback(Task.succeed({key: key, value: value}));  
+      } else {
+        callback(Task.fail("cookie " + setcommand + " was not set. It holds <" + newValue + ">"));
+      }
+    });
   }
 
   function get(key)
   {
-    var value = howToGetACookie(key)
-    if (!value) {
-      return Task.succeed(Maybe.Nothing);
-    } else {
-      var output = {key: key, value: value};
-      return Task.succeed(Maybe.Just(output));
-    }
+    return Task.asyncFunction(function(callback) {
+      var value = howToGetACookie(key)
+      if (!value) {
+        callback(Task.succeed(Maybe.Nothing));
+      } else {
+        var output = {key: key, value: value};
+        callback(Task.succeed(Maybe.Just(output)));
+      }
+    });
   }   
 
   return localRuntime.Native.Cookie.values = {
